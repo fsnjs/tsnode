@@ -1,0 +1,81 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "FsnProjectConfig",
+    "description": "JSON Schema for `fsn-project.json` description file",
+    "type": "object",
+    "properties": {
+        "$schema": {
+            "type": "string"
+        },
+        "tsconfig": {
+            "description": "Relative path to the project's `tsconfig.json`.",
+            "type": "string",
+            "default": "tsconfig.json"
+        },
+        "deleteDestPath": {
+            "description": "Delete output path before build.",
+            "type": "boolean",
+            "default": true
+        },
+        "keepLifecycleScripts": {
+            "description": "Enable this to keep the 'scripts' section in `package.json`. Read the NPM Blog on 'Package install scripts vulnerability' – http://blog.npmjs.org/post/141702881055/package-install-scripts-vulnerability",
+            "type": "boolean",
+            "default": false
+        },
+        "copyReadme": {
+            "description": "For Typescript projects, enable this to copy README.md to the output directory specified in your tsconfig.json",
+            "type": "boolean",
+            "default": true
+        },
+        "assets": {
+            "description": "A list of files or directory that are copied into the output directory. Glob patterns are accepted.",
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "default": []
+        },
+        "localDependencies": {
+            "description": "Include a list of local dependencies to insert into the `dependencies` section of your package manifest.",
+            "type": "object",
+            "patternProperties": {
+                "^(?:@[a-zA-Z0-9._-]+/)?[a-zA-Z0-9._-]+$": {
+                    "description": "Defines a local dependency that will be added to your package manifest.",
+                    "type": "object",
+                    "properties": {
+                        "rootDir": {
+                            "description": "The path to the local dependency's root directory (i.e. the location of its `package.json` file) relative to this file.",
+                            "type": "string"
+                        },
+                        "version": {
+                            "description": "Specify a version number to include in this project's package manifest.",
+                            "type": "string",
+                            "default": "@latest"
+                        }
+                    }
+                }
+            },
+            "default": {}
+        },
+        "lib": {
+            "description": "Description of the library's entry point.",
+            "type": "object",
+            "additionalProperties": false,
+            "default": {},
+            "properties": {
+                "entryFile": {
+                    "description": "The name of the entry .ts or .js file. (default: `public_api.ts`).",
+                    "type": "string",
+                    "default": "public_api.ts"
+                },
+                "bin": {
+                    "description": "For libraries with a CLI, the name of the bin .ts or .js file. (default: `bin.ts`)",
+                    "type": "string",
+                    "default": "bin.ts"
+                }
+            }
+        }
+    },
+    "required": [],
+    "additionalProperties": false
+}

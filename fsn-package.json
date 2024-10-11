@@ -1,0 +1,10 @@
+{
+    "$schema": "./src/schema/fsn-package.schema.json",
+    "assets": [
+        "src/schema/*.json"
+    ],
+    "lib": {
+        "entryFile": "public_api.ts",
+        "bin": "bin.ts"
+    }
+}

@@ -4,6 +4,6 @@ import { dirname, join, resolve } from 'path';
 export function findBack(filename: string, path = resolve()) {
     const filePath = join(path, filename);
     if (existsSync(filePath)) return filePath;
-    if (path.length === 1) throw new Error(`Failed to resolve ${filename}.`);
+    if (path.length === 1) return undefined;
     return findBack(filename, dirname(path));
 }

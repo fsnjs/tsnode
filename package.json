@@ -4,7 +4,7 @@
   "description": "Typescript build and watch utilities.",
   "main": "public-api.js",
   "bin": {
-    "tsnode": "bin.js"
+    "tsnode": "dist/bin.js"
   },
   "scripts": {
     "publish": "cd dist && npm publish --access public",
@@ -15,7 +15,13 @@
     "type": "git",
     "url": "git+https://github.com/fsnjs/tsc.git"
   },
-  "keywords": [],
+  "keywords": [
+    "typescript",
+    "node",
+    "run",
+    "serve",
+    "watch"
+  ],
   "author": "Alexander Porrello",
   "license": "MIT",
   "bugs": {
@@ -32,6 +38,7 @@
   "dependencies": {
     "chalk": "^5.3.0",
     "glob": "^11.0.0",
+    "ora": "^8.1.0",
     "rxjs": "^7.8.1",
     "yargs": "^17.7.2"
   }

@@ -1,15 +1,15 @@
 import { existsSync } from 'fs';
 import { exit } from 'process';
-import { glob } from 'glob';
+import { globSync } from 'glob';
 import { join, resolve } from 'path';
 import { logErr } from './util/log-err.js';
 
-export async function resolveSrcFile(srcFileNameOrPath: string, tsDir: string) {
+export function resolveSrcFile(srcFileNameOrPath: string, tsDir: string) {
     if (existsSync(srcFileNameOrPath)) return srcFileNameOrPath;
     const resolved = resolve(srcFileNameOrPath);
     if (existsSync(resolved)) return resolved;
 
-    const sourcePath = await glob(join(tsDir, '**', srcFileNameOrPath));
+    const sourcePath = globSync(join(tsDir, '**', srcFileNameOrPath));
 
     if (sourcePath.length === 0) {
         logErr(

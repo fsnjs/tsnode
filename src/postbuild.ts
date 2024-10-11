@@ -2,12 +2,15 @@ import { execSync } from 'child_process';
 import { cpSync, existsSync, readFileSync, writeFileSync } from 'fs';
 import { join, resolve } from 'path';
 import { exit } from 'process';
-import { glob } from 'glob';
+import { globSync } from 'glob';
 import { TsConfig } from './ts/tsconfig.js';
+import { LocalDependency } from './schema/fsn-package.schema.js';
 
-export async function postbuild(
+export function postbuild(
     keepLifecycleScripts: boolean,
-    assets: string[] = []
+    assets: string[] = [],
+    // @ts-ignore @to-do
+    localDependencies?: Record<string, LocalDependency>
 ) {
     const dist = (() => {
         let outDir = resolve('dist');
@@ -40,10 +43,8 @@ export async function postbuild(
         cpSync(resolve(a), resolve('dist', a), { recursive: true });
     });
 
-    await (async () => {
-        const distFiles = await glob(join(dist, '**/*.js'));
-        const bin = distFiles.find((f) => /bin|cli/.test(f));
-        if (!bin) exit();
-        execSync('chmod 755 ' + bin);
-    })();
+    const distFiles = globSync(join(dist, '**/*.js'));
+    const bin = distFiles.find((f) => /bin|cli/.test(f));
+    if (!bin) exit();
+    execSync('chmod 755 ' + bin);
 }

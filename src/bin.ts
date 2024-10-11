@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 
-import yargs from 'yargs';
-import { argv, exit } from 'process';
+import yargs, { ArgumentsCamelCase } from 'yargs';
+import { argv } from 'process';
+import { readFileSync } from 'fs';
 import { hideBin } from 'yargs/helpers';
-import { existsSync, readFileSync } from 'fs';
 import { resolve } from 'path';
 
-import { postbuild } from './postbuild.js';
+import { CliOptions, mergeCliOptions } from './schema/merge-cli-args.js';
 import { build } from './build.js';
-import { logErr } from './util/log-err.js';
+import { postbuild } from './postbuild.js';
+import { readPackageConfig } from './schema/read-package-config.js';
 
 const version = (() => {
     const source = readFileSync(resolve('package.json'), 'utf-8');
@@ -16,21 +17,21 @@ const version = (() => {
     return version;
 })();
 
-await yargs(hideBin(argv))
+yargs(hideBin(argv))
     .command(
-        'build',
+        '$0',
         'Build a typescript project.',
         (yargs) => {
             return yargs
                 .option('project', {
                     alias: 'p',
                     desc: 'Provide the path to a tsconfig.json file.',
-                    type: 'string',
-                    default: 'tsconfig.json'
+                    type: 'string'
                 })
                 .option('assets', {
                     desc: 'Path to directories or files that should be copied to the output directory.',
-                    type: 'array'
+                    type: 'array',
+                    string: true
                 })
                 .option('deleteDestPath', {
                     desc: 'Delete output path before build.',
@@ -55,28 +56,32 @@ await yargs(hideBin(argv))
                 .version(version)
                 .help();
         },
-        async ({
-            project,
-            watch,
-            source,
-            deleteDestPath,
-            keepLifecycleScripts,
-            assets
-        }) => {
-            project = resolve(project);
+        (opts: ArgumentsCamelCase<CliOptions>) => {
+            const pkg = readPackageConfig();
 
-            if (!existsSync(project)) {
-                logErr(
-                    'This command is not available when running the Fusion CLI outside of a TypeScript workspace.'
-                );
-                exit();
-            }
+            const {
+                assets,
+                deleteDestPath,
+                keepLifecycleScripts,
+                lib,
+                tsconfig,
+                localDependencies
+            } = mergeCliOptions(opts, pkg);
 
-            build(project, source, watch, deleteDestPath).subscribe({
-                complete: async () => {
-                    await postbuild(keepLifecycleScripts, <string[]>assets);
+            build(
+                tsconfig,
+                lib.entryFile,
+                opts.watch,
+                deleteDestPath
+            ).subscribe({
+                complete: () => {
+                    postbuild(
+                        keepLifecycleScripts,
+                        <string[]>assets,
+                        localDependencies
+                    );
                 }
             });
         }
     )
-    .parse();
+    .parseSync();

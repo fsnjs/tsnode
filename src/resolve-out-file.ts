@@ -1,8 +1,8 @@
-import { glob } from 'glob';
+import { globSync } from 'glob';
 import { join } from 'path';
 
-export async function resolveOutFile(outPath: string, outFile: string) {
-    const matches = await glob(join(outPath, '**/' + outFile + '.js'));
+export function resolveOutFile(outPath: string, outFile: string) {
+    const matches = globSync(join(outPath, '**/' + outFile + '.js'));
 
     if (matches.length === 0) {
         throw new Error(`Compiled file could not be resolved.`);
